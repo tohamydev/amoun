@@ -1,0 +1,27 @@
+[
+  {
+    "id": 1,
+    "name": "Industrial Solvent A",
+    "description": "High-quality industrial solvent for various applications",
+    "category": "Industrial Chemicals",
+    "image": "/placeholder.svg?height=300&width=400",
+    "isVisible": true
+  },
+  {
+    "id": 2,
+    "name": "Fertilizer X",
+    "description": "Advanced fertilizer for improved crop yield",
+    "category": "Agricultural Chemicals",
+    "image": "/placeholder.svg?height=300&width=400",
+    "isVisible": true
+  },
+  {
+    "id": 3,
+    "name": "Pharmaceutical Compound Y",
+    "description": "High-purity compound for pharmaceutical manufacturing",
+    "category": "Pharmaceutical Chemicals",
+    "image": "/placeholder.svg?height=300&width=400",
+    "isVisible": true
+  }
+]
+

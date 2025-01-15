@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { Facebook, Twitter, LinkedinIcon as LinkedIn, Instagram } from 'lucide-react'
 
 const navItems = [
@@ -18,14 +19,16 @@ const socialLinks = [
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-800 text-white py-8">
+    <footer className="bg-gray-800 dark:bg-gray-900 text-white py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row justify-between items-center">
-          <div className="mb-4 md:mb-0">
-            <Link href="/" className="text-2xl font-bold">
-              Amoun Chemicals
-            </Link>
-          </div>
+          <Image
+            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logo-01-bPhj0Lyyp5K5vtMtuSd7vclZPOCzHj.png"
+            alt="Amoun Chemicals Logo"
+            width={180}
+            height={50}
+            className="mb-4 md:mb-0 invert"
+          />
           <nav className="mb-4 md:mb-0">
             <ul className="flex flex-wrap justify-center space-x-6">
               {navItems.map((item) => (

@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 export default function Home() {
   return (
-    <section id="home" className="relative bg-blue-600 text-white">
+    <section id="home" className="relative bg-blue-600 dark:bg-blue-800 text-white">
       <div 
         className="absolute inset-0 bg-cover bg-center z-0" 
         style={{
@@ -20,11 +20,10 @@ export default function Home() {
           </p>
           <div className="space-x-4">
             <Link
-              href="#services"
-              className="bg-white text-blue-600 px-6 py-3 rounded-md text-lg font-semibold hover:bg-blue-100 transition duration-300"
-              scroll={true}
+              href="/products"
+              className="bg-white text-blue-600 dark:bg-gray-800 dark:text-white px-6 py-3 rounded-md text-lg font-semibold hover:bg-blue-100 dark:hover:bg-gray-700 transition duration-300"
             >
-              Explore Services
+              Explore Products
             </Link>
             <Link
               href="#contact"

@@ -1,0 +1,27 @@
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-33.33%);
+  }
+}
+
+.partners-scroll {
+  animation: scroll 30s linear infinite;
+  width: 300%; /* Triple the width to accommodate three sets of logos */
+}
+
+.partners-scroll:hover {
+  animation-play-state: paused;
+}
+
+/* Ensure smooth animation */
+.partners-scroll {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  -moz-backface-visibility: hidden;
+  -ms-backface-visibility: hidden;
+  will-change: transform;
+}
+
