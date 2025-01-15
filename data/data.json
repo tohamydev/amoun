@@ -1,0 +1,59 @@
+{
+  "categories": [
+    {
+      "id": 1,
+      "name": "Industrial Chemicals",
+      "image": "/placeholder.svg?height=300&width=400",
+      "slug": "industrial-chemicals"
+    },
+    {
+      "id": 2,
+      "name": "Agricultural Chemicals",
+      "image": "/placeholder.svg?height=300&width=400",
+      "slug": "agricultural-chemicals"
+    },
+    {
+      "id": 3,
+      "name": "Pharmaceutical Chemicals",
+      "image": "/placeholder.svg?height=300&width=400",
+      "slug": "pharmaceutical-chemicals"
+    },
+    {
+      "id": 4,
+      "name": "Laboratory Chemicals",
+      "image": "/placeholder.svg?height=300&width=400",
+      "slug": "laboratory-chemicals"
+    }
+  ],
+  "products": [
+    {
+      "id": 1,
+      "name": "Industrial Solvent A",
+      "description": "High-quality industrial solvent for various applications",
+      "image": "/placeholder.svg?height=300&width=400",
+      "category": "industrial-chemicals"
+    },
+    {
+      "id": 2,
+      "name": "Industrial Cleaner B",
+      "description": "Professional-grade industrial cleaning solution",
+      "image": "/placeholder.svg?height=300&width=400",
+      "category": "industrial-chemicals"
+    },
+    {
+      "id": 3,
+      "name": "Fertilizer X",
+      "description": "Advanced fertilizer for improved crop yield",
+      "image": "/placeholder.svg?height=300&width=400",
+      "category": "agricultural-chemicals"
+    },
+    {
+      "id": 4,
+      "name": "Pesticide Y",
+      "description": "Effective pest control solution for agriculture",
+      "image": "/placeholder.svg?height=300&width=400",
+      "category": "agricultural-chemicals"
+    }
+  ]
+}
+

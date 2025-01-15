@@ -1,17 +1,17 @@
 'use client'
 
 import Image from 'next/image'
-import { useState, useEffect } from 'react';
 
-const [partners, setPartners] = useState([])
+const partners = [
+  { name: 'Partner 1', logo: '/placeholder.svg?height=60&width=120' },
+  { name: 'Partner 2', logo: '/placeholder.svg?height=60&width=120' },
+  { name: 'Partner 3', logo: '/placeholder.svg?height=60&width=120' },
+  { name: 'Partner 4', logo: '/placeholder.svg?height=60&width=120' },
+  { name: 'Partner 5', logo: '/placeholder.svg?height=60&width=120' },
+  { name: 'Partner 6', logo: '/placeholder.svg?height=60&width=120' },
+]
 
 export default function Partners() {
-  useEffect(() => {
-    fetch('/api/partners')
-      .then(res => res.json())
-      .then(data => setPartners(data))
-  }, [])
-
   return (
     <section id="partners" className="py-16 md:py-24 bg-white dark:bg-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -30,6 +30,30 @@ export default function Partners() {
             {/* First set of partners */}
             {partners.map((partner, index) => (
               <div key={`first-${index}`} className="flex-none">
+                <Image
+                  src={partner.logo || "/placeholder.svg"}
+                  alt={partner.name}
+                  width={120}
+                  height={60}
+                  className="grayscale hover:grayscale-0 transition-all duration-300 dark:invert"
+                />
+              </div>
+            ))}
+            {/* Duplicate set for seamless loop */}
+            {partners.map((partner, index) => (
+              <div key={`second-${index}`} className="flex-none">
+                <Image
+                  src={partner.logo || "/placeholder.svg"}
+                  alt={partner.name}
+                  width={120}
+                  height={60}
+                  className="grayscale hover:grayscale-0 transition-all duration-300 dark:invert"
+                />
+              </div>
+            ))}
+            {/* Third set for extra smoothness */}
+            {partners.map((partner, index) => (
+              <div key={`third-${index}`} className="flex-none">
                 <Image
                   src={partner.logo || "/placeholder.svg"}
                   alt={partner.name}

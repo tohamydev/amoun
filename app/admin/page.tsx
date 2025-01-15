@@ -1,86 +1,74 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import AdminLogin from '@/components/AdminLogin'
+import CategoryEditor from '@/components/CategoryEditor'
+import ProductEditor from '@/components/ProductEditor'
+import FileUploader from '@/components/FileUploader'
 
-export default function AdminLogin() {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const router = useRouter()
+export default function AdminPage() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [categories, setCategories] = useState([])
+  const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(true)
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    const res = await fetch('/api/admin/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password }),
-    })
-    const data = await res.json()
-    if (data.success) {
-      router.push('/admin/products')
-    } else {
-      setError('Invalid credentials')
+  useEffect(() => {
+    fetchData()
+  }, [])
+
+  const fetchData = async () => {
+    try {
+      const response = await fetch('/api/data')
+      const data = await response.json()
+      setCategories(data.categories)
+      setProducts(data.products)
+      setLoading(false)
+    } catch (error) {
+      console.error('Error fetching data:', error)
+      setLoading(false)
     }
   }
 
+  const handleLogin = (success: boolean) => {
+    setIsAuthenticated(success)
+  }
+
+  const handleSave = async (updatedCategories: any[], updatedProducts: any[]) => {
+    try {
+      const response = await fetch('/api/data', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ categories: updatedCategories, products: updatedProducts }),
+      })
+
+      if (response.ok) {
+        alert('Data saved successfully!')
+        fetchData()
+      } else {
+        throw new Error('Failed to save data')
+      }
+    } catch (error) {
+      console.error('Error saving data:', error)
+      alert('Failed to save data. Please try again.')
+    }
+  }
+
+  if (loading) {
+    return <div className="flex justify-center items-center h-screen">Loading...</div>
+  }
+
+  if (!isAuthenticated) {
+    return <AdminLogin onLogin={handleLogin} />
+  }
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Admin Login
-          </h2>
-        </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <input type="hidden" name="remember" defaultValue="true" />
-          <div className="rounded-md shadow-sm -space-y-px">
-            <div>
-              <label htmlFor="username" className="sr-only">
-                Username
-              </label>
-              <input
-                id="username"
-                name="username"
-                type="text"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="sr-only">
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-          </div>
-
-          {error && (
-            <div className="text-red-500 text-sm">{error}</div>
-          )}
-
-          <div>
-            <button
-              type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            >
-              Sign in
-            </button>
-          </div>
-        </form>
-      </div>
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Admin Dashboard</h1>
+      <CategoryEditor categories={categories} onSave={handleSave} />
+      <ProductEditor products={products} categories={categories} onSave={handleSave} />
+      <FileUploader />
     </div>
   )
 }

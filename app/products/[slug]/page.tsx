@@ -1,18 +1,11 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import fs from 'fs/promises'
-import path from 'path'
+import { WhatsappIcon } from '@/components/whatsapp-icon'
+import { categoryNames, products } from '@/lib/product-data'
 
-async function getProducts() {
-  const filePath = path.join(process.cwd(), 'data', 'products.json')
-  const jsonData = await fs.readFile(filePath, 'utf8')
-  return JSON.parse(jsonData)
-}
-
-export default async function CategoryPage({ params }: { params: { slug: string } }) {
-  const products = await getProducts()
-  const categoryName = params.slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
-  const categoryProducts = products.filter(p => p.isVisible && p.category.toLowerCase().replace(/ /g, '-') === params.slug)
+export default function CategoryPage({ params }: { params: { slug: string } }) {
+  const categoryProducts = products[params.slug as keyof typeof products] || []
+  const categoryName = categoryNames[params.slug as keyof typeof categoryNames] || 'Products'
 
   const createEmailLink = (product: { name: string }) => {
     const subject = encodeURIComponent('Product Inquiry')

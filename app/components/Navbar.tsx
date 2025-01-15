@@ -17,13 +17,6 @@ const navItems = [
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
-  const [logo, setLogo] = useState(null)
-
-  useEffect(() => {
-    fetch('/api/logo')
-      .then(res => res.json())
-      .then(data => setLogo(data))
-  }, [])
 
   const scrollToSection = (elementId: string) => {
     const element = document.getElementById(elementId);
@@ -63,7 +56,7 @@ export default function Navbar() {
           <div className="flex items-center">
             <Link href="/" className="flex items-center">
               <Image
-                src={logo?.url || "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logo-01-bPhj0Lyyp5K5vtMtuSd7vclZPOCzHj.png"}
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logo-01-bPhj0Lyyp5K5vtMtuSd7vclZPOCzHj.png"
                 alt="Amoun Chemicals Logo"
                 width={180}
                 height={50}
