@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 interface Category {
-  id: number
+  id: string
   name: string
   image: string
   slug: string
@@ -11,11 +11,17 @@ interface Category {
 
 interface CategoryEditorProps {
   categories: Category[]
+  products: any[]
   onSave: (categories: Category[], products: any[]) => void
+  isSaving: boolean
 }
 
-export default function CategoryEditor({ categories, onSave }: CategoryEditorProps) {
-  const [editedCategories, setEditedCategories] = useState(categories)
+export default function CategoryEditor({ categories, products, onSave, isSaving }: CategoryEditorProps) {
+  const [editedCategories, setEditedCategories] = useState<Category[]>(categories)
+
+  useEffect(() => {
+    setEditedCategories(categories)
+  }, [categories])
 
   const handleChange = (index: number, field: keyof Category, value: string) => {
     const updatedCategories = [...editedCategories]
@@ -25,7 +31,7 @@ export default function CategoryEditor({ categories, onSave }: CategoryEditorPro
 
   const handleAdd = () => {
     const newCategory: Category = {
-      id: Math.max(...editedCategories.map(c => c.id), 0) + 1,
+      id: Date.now().toString(),
       name: '',
       image: '',
       slug: ''
@@ -39,7 +45,8 @@ export default function CategoryEditor({ categories, onSave }: CategoryEditorPro
   }
 
   const handleSave = () => {
-    onSave(editedCategories, []) // Pass an empty array for products as we're not editing them here
+    console.log('Saving categories:', editedCategories)
+    onSave(editedCategories, products)
   }
 
   return (
@@ -84,9 +91,10 @@ export default function CategoryEditor({ categories, onSave }: CategoryEditorPro
       </button>
       <button
         onClick={handleSave}
-        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+        disabled={isSaving}
+        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:bg-gray-400"
       >
-        Save Changes
+        {isSaving ? 'Saving...' : 'Save Changes'}
       </button>
     </div>
   )

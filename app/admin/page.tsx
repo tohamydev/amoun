@@ -2,15 +2,42 @@
 
 import { useState, useEffect } from 'react'
 import AdminLogin from '@/components/AdminLogin'
-import CategoryEditor from '@/components/CategoryEditor'
-import ProductEditor from '@/components/ProductEditor'
-import FileUploader from '@/components/FileUploader'
+import CategoryList from '@/components/CategoryList'
+import CategoryForm from '@/components/CategoryForm'
+import ProductTable from '@/components/ProductTable'
+import ProductForm from '@/components/ProductForm'
+import InsertDummyData from '@/components/InsertDummyData'
+import { db } from '@/lib/firebase'
+import { collection, doc, deleteDoc, updateDoc, addDoc, getDocs } from 'firebase/firestore'
+import LoadingSpinner from '@/components/LoadingSpinner'
+
+interface Category {
+  id: string
+  name: string
+  slug: string
+  image: string
+}
+
+interface Product {
+  id: string
+  name: string
+  description: string
+  image: string
+  category: string
+  hidden?: boolean
+}
 
 export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [categories, setCategories] = useState([])
-  const [products, setProducts] = useState([])
+  const [categories, setCategories] = useState<Category[]>([])
+  const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [activeTab, setActiveTab] = useState('categories')
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null)
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null)
+  const [isCategoryFormOpen, setIsCategoryFormOpen] = useState(false)
+  const [isProductFormOpen, setIsProductFormOpen] = useState(false)
 
   useEffect(() => {
     fetchData()
@@ -18,13 +45,20 @@ export default function AdminPage() {
 
   const fetchData = async () => {
     try {
-      const response = await fetch('/api/data')
-      const data = await response.json()
-      setCategories(data.categories)
-      setProducts(data.products)
-      setLoading(false)
+      setLoading(true)
+      setError(null)
+      const categoriesSnapshot = await getDocs(collection(db, 'categories'))
+      const productsSnapshot = await getDocs(collection(db, 'products'))
+
+      const fetchedCategories = categoriesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Category))
+      const fetchedProducts = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product))
+
+      setCategories(fetchedCategories)
+      setProducts(fetchedProducts)
     } catch (error) {
       console.error('Error fetching data:', error)
+      setError('Failed to load data. Please try refreshing the page.')
+    } finally {
       setLoading(false)
     }
   }
@@ -33,30 +67,122 @@ export default function AdminPage() {
     setIsAuthenticated(success)
   }
 
-  const handleSave = async (updatedCategories: any[], updatedProducts: any[]) => {
+  const handleAddCategory = async (category: Omit<Category, 'id'>) => {
     try {
-      const response = await fetch('/api/data', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ categories: updatedCategories, products: updatedProducts }),
-      })
+      const docRef = await addDoc(collection(db, 'categories'), category)
+      const newCategory = { id: docRef.id, ...category }
+      setCategories([...categories, newCategory])
+      setIsCategoryFormOpen(false)
+    } catch (error) {
+      console.error('Error adding category:', error)
+      setError('Failed to add category. Please try again.')
+    }
+  }
 
-      if (response.ok) {
-        alert('Data saved successfully!')
-        fetchData()
-      } else {
-        throw new Error('Failed to save data')
+  const handleUpdateCategory = async (updatedCategory: Category) => {
+    try {
+      const { id, ...categoryData } = updatedCategory;
+      await updateDoc(doc(db, 'categories', id), categoryData);
+      setCategories(categories.map(cat => cat.id === id ? updatedCategory : cat));
+      setIsCategoryFormOpen(false);
+
+      // Update associated products
+      const updatedProducts = products.map(product => {
+        if (product.category === editingCategory?.slug) {
+          return { ...product, category: updatedCategory.slug };
+        }
+        return product;
+      });
+      setProducts(updatedProducts);
+
+      // Update products in Firestore
+      for (const product of updatedProducts) {
+        if (product.category === updatedCategory.slug) {
+          await updateDoc(doc(db, 'products', product.id), { category: updatedCategory.slug });
+        }
       }
     } catch (error) {
-      console.error('Error saving data:', error)
-      alert('Failed to save data. Please try again.')
+      console.error('Error updating category:', error);
+      setError('Failed to update category. Please try again.');
+    }
+  };
+
+  const handleDeleteCategory = async (id: string) => {
+    if (window.confirm('Are you sure you want to delete this category? This will also delete all associated products.')) {
+      try {
+        await deleteDoc(doc(db, 'categories', id))
+        setCategories(categories.filter(cat => cat.id !== id))
+
+        // Delete associated products
+        const associatedProducts = products.filter(product => product.category === categories.find(cat => cat.id === id)?.slug)
+        for (const product of associatedProducts) {
+          await deleteDoc(doc(db, 'products', product.id))
+        }
+        setProducts(products.filter(product => !associatedProducts.includes(product)))
+      } catch (error) {
+        console.error('Error deleting category:', error)
+        setError('Failed to delete category. Please try again.')
+      }
+    }
+  }
+
+  const handleAddProduct = async (product: Omit<Product, 'id'>) => {
+    try {
+      const docRef = await addDoc(collection(db, 'products'), product)
+      const newProduct = { id: docRef.id, ...product }
+      setProducts([...products, newProduct])
+      setIsProductFormOpen(false)
+    } catch (error) {
+      console.error('Error adding product:', error)
+      setError('Failed to add product. Please try again.')
+    }
+  }
+
+  const handleUpdateProduct = async (updatedProduct: Product) => {
+    try {
+      const { id, ...productData } = updatedProduct;
+      await updateDoc(doc(db, 'products', id), productData);
+      setProducts(products.map(prod => prod.id === id ? updatedProduct : prod));
+      setIsProductFormOpen(false);
+    } catch (error) {
+      console.error('Error updating product:', error);
+      setError('Failed to update product. Please try again.');
+    }
+  };
+
+  const handleDeleteProduct = async (id: string) => {
+    try {
+      await deleteDoc(doc(db, 'products', id))
+      setProducts(products.filter(product => product.id !== id))
+    } catch (error) {
+      console.error('Error deleting product:', error)
+      setError('Failed to delete product. Please try again.')
+    }
+  }
+
+  const handleToggleProductVisibility = async (id: string) => {
+    try {
+      const productRef = doc(db, 'products', id)
+      const product = products.find(p => p.id === id)
+      if (product) {
+        await updateDoc(productRef, {
+          hidden: !product.hidden
+        })
+        setProducts(products.map(p => p.id === id ? { ...p, hidden: !p.hidden } : p))
+      }
+    } catch (error) {
+      console.error('Error toggling product visibility:', error)
+      setError('Failed to update product visibility. Please try again.')
     }
   }
 
   if (loading) {
-    return <div className="flex justify-center items-center h-screen">Loading...</div>
+    return (
+      <div className="container mx-auto p-4">
+        <h1 className="text-2xl font-bold mb-4">Admin Dashboard</h1>
+        <LoadingSpinner />
+      </div>
+    )
   }
 
   if (!isAuthenticated) {
@@ -66,9 +192,100 @@ export default function AdminPage() {
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Admin Dashboard</h1>
-      <CategoryEditor categories={categories} onSave={handleSave} />
-      <ProductEditor products={products} categories={categories} onSave={handleSave} />
-      <FileUploader />
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
+          <p>{error}</p>
+          <button
+            onClick={fetchData}
+            className="mt-2 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+          >
+            Refresh Data
+          </button>
+        </div>
+      )}
+      <div className="mb-4">
+        <button
+          onClick={() => setActiveTab('categories')}
+          className={`mr-2 px-4 py-2 rounded ${activeTab === 'categories' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'}`}
+        >
+          Categories
+        </button>
+        <button
+          onClick={() => setActiveTab('products')}
+          className={`px-4 py-2 rounded ${activeTab === 'products' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'}`}
+        >
+          Products
+        </button>
+      </div>
+      {activeTab === 'categories' && (
+        <div>
+          <h2 className="text-xl font-semibold mb-4">Categories</h2>
+          <button
+            onClick={() => {
+              setEditingCategory(null)
+              setIsCategoryFormOpen(true)
+            }}
+            className="mb-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
+          >
+            Add New Category
+          </button>
+          <CategoryList
+            categories={categories}
+            onEdit={(category) => {
+              setEditingCategory(category)
+              setIsCategoryFormOpen(true)
+            }}
+            onDelete={handleDeleteCategory}
+          />
+          <CategoryForm
+            category={editingCategory || undefined}
+            onSubmit={editingCategory ? handleUpdateCategory : handleAddCategory}
+            onCancel={() => {
+              setEditingCategory(null)
+              setIsCategoryFormOpen(false)
+            }}
+            isOpen={isCategoryFormOpen}
+          />
+        </div>
+      )}
+      {activeTab === 'products' && (
+        <div>
+          <h2 className="text-xl font-semibold mb-4">Products</h2>
+          <button
+            onClick={() => {
+              setEditingProduct(null)
+              setIsProductFormOpen(true)
+            }}
+            className="mb-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
+          >
+            Add New Product
+          </button>
+          {loading ? (
+            <LoadingSpinner />
+          ) : (
+            <ProductTable
+              products={products}
+              onDelete={handleDeleteProduct}
+              onToggleVisibility={handleToggleProductVisibility}
+              onEdit={(product) => {
+                setEditingProduct(product)
+                setIsProductFormOpen(true)
+              }}
+            />
+          )}
+          <ProductForm
+            product={editingProduct || undefined}
+            categories={categories}
+            onSubmit={editingProduct ? handleUpdateProduct : handleAddProduct}
+            onCancel={() => {
+              setEditingProduct(null)
+              setIsProductFormOpen(false)
+            }}
+            isOpen={isProductFormOpen}
+          />
+        </div>
+      )}
+      <InsertDummyData />
     </div>
   )
 }

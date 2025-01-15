@@ -3,12 +3,8 @@
 import Image from 'next/image'
 
 const partners = [
-  { name: 'Partner 1', logo: '/placeholder.svg?height=60&width=120' },
-  { name: 'Partner 2', logo: '/placeholder.svg?height=60&width=120' },
-  { name: 'Partner 3', logo: '/placeholder.svg?height=60&width=120' },
-  { name: 'Partner 4', logo: '/placeholder.svg?height=60&width=120' },
-  { name: 'Partner 5', logo: '/placeholder.svg?height=60&width=120' },
-  { name: 'Partner 6', logo: '/placeholder.svg?height=60&width=120' },
+  { name: 'Partner 1', logo: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/img-Jatjj6qpZgwhdx9Q9SkiUnL7GrEfjk.svg' },
+  { name: 'Partner 2', logo: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/1-iI0WS0PBkZiCixHcfUnGBduTFJCEVZ.svg' },
 ]
 
 export default function Partners() {
@@ -42,18 +38,6 @@ export default function Partners() {
             {/* Duplicate set for seamless loop */}
             {partners.map((partner, index) => (
               <div key={`second-${index}`} className="flex-none">
-                <Image
-                  src={partner.logo || "/placeholder.svg"}
-                  alt={partner.name}
-                  width={120}
-                  height={60}
-                  className="grayscale hover:grayscale-0 transition-all duration-300 dark:invert"
-                />
-              </div>
-            ))}
-            {/* Third set for extra smoothness */}
-            {partners.map((partner, index) => (
-              <div key={`third-${index}`} className="flex-none">
                 <Image
                   src={partner.logo || "/placeholder.svg"}
                   alt={partner.name}

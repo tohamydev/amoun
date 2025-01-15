@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 interface Product {
-  id: number
+  id: string
   name: string
   description: string
   image: string
@@ -11,19 +11,24 @@ interface Product {
 }
 
 interface Category {
-  id: number
+  id: string
   name: string
   slug: string
 }
 
 interface ProductEditorProps {
-  products: Product[]
   categories: Category[]
-  onSave: (categories: any[], products: Product[]) => void
+  products: Product[]
+  onSave: (categories: Category[], products: Product[]) => void
+  isSaving: boolean
 }
 
-export default function ProductEditor({ products, categories, onSave }: ProductEditorProps) {
-  const [editedProducts, setEditedProducts] = useState(products)
+export default function ProductEditor({ categories, products, onSave, isSaving }: ProductEditorProps) {
+  const [editedProducts, setEditedProducts] = useState<Product[]>(products)
+
+  useEffect(() => {
+    setEditedProducts(products)
+  }, [products])
 
   const handleChange = (index: number, field: keyof Product, value: string) => {
     const updatedProducts = [...editedProducts]
@@ -33,7 +38,7 @@ export default function ProductEditor({ products, categories, onSave }: ProductE
 
   const handleAdd = () => {
     const newProduct: Product = {
-      id: Math.max(...editedProducts.map(p => p.id), 0) + 1,
+      id: Date.now().toString(),
       name: '',
       description: '',
       image: '',
@@ -48,7 +53,8 @@ export default function ProductEditor({ products, categories, onSave }: ProductE
   }
 
   const handleSave = () => {
-    onSave([], editedProducts) // Pass an empty array for categories as we're not editing them here
+    console.log('Saving products:', editedProducts)
+    onSave(categories, editedProducts)
   }
 
   return (
@@ -103,9 +109,10 @@ export default function ProductEditor({ products, categories, onSave }: ProductE
       </button>
       <button
         onClick={handleSave}
-        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+        disabled={isSaving}
+        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:bg-gray-400"
       >
-        Save Changes
+        {isSaving ? 'Saving...' : 'Save Changes'}
       </button>
     </div>
   )

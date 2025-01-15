@@ -8,6 +8,8 @@ import Footer from '@/app/components/Footer'
 import WhatsAppButton from '@/components/whatsapp-button'
 import { ThemeProvider } from 'next-themes'
 import { useEffect, useState } from 'react'
+import { Suspense } from 'react'
+import LoadingSpinner from '@/components/LoadingSpinner'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -28,12 +30,14 @@ export default function RootLayout({
 
   return (
     <html lang="en" className="scroll-smooth" suppressHydrationWarning>
-      <body className={`${inter.className} bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100`}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <body className={`${inter.className} bg-white text-gray-900`}>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
           <div className="flex flex-col min-h-screen">
             <Navbar />
             <main className="flex-grow">
-              {children}
+              <Suspense fallback={<LoadingSpinner />}>
+                {children}
+              </Suspense>
             </main>
             <Footer />
           </div>

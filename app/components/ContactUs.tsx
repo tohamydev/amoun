@@ -9,18 +9,52 @@ export default function ContactUs() {
     email: '',
     message: '',
   })
+  const [contactMethod, setContactMethod] = useState<'email' | 'whatsapp'>('email')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitMessage, setSubmitMessage] = useState('')
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setFormData(prevState => ({ ...prevState, [name]: value }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Here you would typically send the form data to a server
-    console.log('Form submitted:', formData)
-    // Reset form after submission
-    setFormData({ name: '', email: '', message: '' })
+    setIsSubmitting(true)
+    setSubmitMessage('')
+
+    if (contactMethod === 'whatsapp') {
+      const message = encodeURIComponent(`Name: ${formData.name}\nEmail: ${formData.email}\nMessage: ${formData.message}`)
+      window.open(`https://wa.me/+2010044724510?text=${message}`, '_blank')
+      setSubmitMessage('WhatsApp opened with your message.')
+      setIsSubmitting(false)
+      return
+    }
+
+    try {
+      const response = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      const result = await response.json()
+
+      if (response.ok) {
+        setSubmitMessage('Thank you for your message. We will get back to you soon!')
+        setFormData({ name: '', email: '', message: '' })
+      } else {
+        console.error('Error response:', result)
+        setSubmitMessage(`There was an error sending your message: ${result.error || 'Unknown error'}`)
+      }
+    } catch (error) {
+      console.error('Error sending email:', error)
+      setSubmitMessage('There was an error sending your message. Please try again or contact us directly.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -70,13 +104,46 @@ export default function ContactUs() {
                 ></textarea>
               </div>
               <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Contact Method</label>
+                <div className="flex space-x-4">
+                  <label className="inline-flex items-center">
+                    <input
+                      type="radio"
+                      className="form-radio"
+                      name="contactMethod"
+                      value="email"
+                      checked={contactMethod === 'email'}
+                      onChange={() => setContactMethod('email')}
+                    />
+                    <span className="ml-2">Email</span>
+                  </label>
+                  <label className="inline-flex items-center">
+                    <input
+                      type="radio"
+                      className="form-radio"
+                      name="contactMethod"
+                      value="whatsapp"
+                      checked={contactMethod === 'whatsapp'}
+                      onChange={() => setContactMethod('whatsapp')}
+                    />
+                    <span className="ml-2">WhatsApp</span>
+                  </label>
+                </div>
+              </div>
+              <div>
                 <button
                   type="submit"
-                  className="w-full bg-blue-600 text-white px-6 py-3 rounded-md text-lg font-semibold hover:bg-blue-500 transition duration-300 dark:bg-blue-700 dark:hover:bg-blue-600"
+                  disabled={isSubmitting}
+                  className="w-full bg-blue-600 text-white px-6 py-3 rounded-md text-lg font-semibold hover:bg-blue-500 transition duration-300 dark:bg-blue-700 dark:hover:bg-blue-600 disabled:opacity-50"
                 >
-                  Send Message
+                  {isSubmitting ? 'Sending...' : `Send Message via ${contactMethod === 'email' ? 'Email' : 'WhatsApp'}`}
                 </button>
               </div>
+              {submitMessage && (
+                <div className={`text-center ${submitMessage.includes('error') ? 'text-red-600' : 'text-green-600'}`}>
+                  {submitMessage}
+                </div>
+              )}
             </form>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 space-y-6">
@@ -86,7 +153,7 @@ export default function ContactUs() {
             </div>
             <div className="flex items-center">
               <Phone className="w-6 h-6 text-blue-600 dark:text-blue-400 mr-4 flex-shrink-0" />
-              <p className="text-gray-700 dark:text-gray-300">+123-456-7890</p>
+              <p className="text-gray-700 dark:text-gray-300">+201004724510</p>
             </div>
             <div className="flex items-center">
               <Mail className="w-6 h-6 text-blue-600 dark:text-blue-400 mr-4 flex-shrink-0" />
