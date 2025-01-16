@@ -7,19 +7,19 @@ import { collection, setDoc, doc } from 'firebase/firestore'
 const dummyCategories = [
   {
     id: '1',
-    name: 'Industrial Chemicals',
+    name: { en: 'Industrial Chemicals', ar: 'الكيماويات الصناعية' },
     image: '/placeholder.svg?height=300&width=400',
     slug: 'industrial-chemicals'
   },
   {
     id: '2',
-    name: 'Agricultural Chemicals',
+    name: { en: 'Agricultural Chemicals', ar: 'الكيماويات الزراعية' },
     image: '/placeholder.svg?height=300&width=400',
     slug: 'agricultural-chemicals'
   },
   {
     id: '3',
-    name: 'Pharmaceutical Chemicals',
+    name: { en: 'Pharmaceutical Chemicals', ar: 'الكيماويات الصيدلانية' },
     image: '/placeholder.svg?height=300&width=400',
     slug: 'pharmaceutical-chemicals'
   }
@@ -28,22 +28,31 @@ const dummyCategories = [
 const dummyProducts = [
   {
     id: '1',
-    name: 'Industrial Solvent A',
-    description: 'High-quality industrial solvent for various applications',
+    name: { en: 'Industrial Solvent A', ar: 'المذيب الصناعي أ' },
+    description: { 
+      en: 'High-quality industrial solvent for various applications',
+      ar: 'مذيب صناعي عالي الجودة لتطبيقات متنوعة'
+    },
     image: '/placeholder.svg?height=300&width=400',
     category: 'industrial-chemicals'
   },
   {
     id: '2',
-    name: 'Fertilizer X',
-    description: 'Advanced fertilizer for improved crop yield',
+    name: { en: 'Fertilizer X', ar: 'السماد س' },
+    description: { 
+      en: 'Advanced fertilizer for improved crop yield',
+      ar: 'سماد متطور لتحسين إنتاجية المحاصيل'
+    },
     image: '/placeholder.svg?height=300&width=400',
     category: 'agricultural-chemicals'
   },
   {
     id: '3',
-    name: 'Pharmaceutical Grade Chemical',
-    description: 'Pure pharmaceutical grade chemical compound',
+    name: { en: 'Pharmaceutical Grade Chemical', ar: 'مادة كيميائية صيدلانية' },
+    description: { 
+      en: 'Pure pharmaceutical grade chemical compound',
+      ar: 'مركب كيميائي نقي من الدرجة الصيدلانية'
+    },
     image: '/placeholder.svg?height=300&width=400',
     category: 'pharmaceutical-chemicals'
   }

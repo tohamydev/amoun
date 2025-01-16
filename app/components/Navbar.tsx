@@ -5,18 +5,32 @@ import Link from 'next/link'
 import { Menu, X } from 'lucide-react'
 import Image from 'next/image'
 import DarkModeToggle from './DarkModeToggle'
+import LanguageSwitcher from '@/components/LanguageSwitcher'
+import { useTranslation } from 'react-i18next'
+import I18nProvider from '@/components/I18nProvider'
 
 const navItems = [
-  { name: 'Home', href: '#home', id: 'home' },
-  { name: 'Products', href: '/products', id: 'products' },
-  { name: 'About Us', href: '#about', id: 'about' },
-  { name: 'Services', href: '#services', id: 'services' },
-  { name: 'Partners', href: '#partners', id: 'partners' },
-  { name: 'Contact Us', href: '#contact', id: 'contact' },
+  { name: 'home', href: '#home', id: 'home' },
+  { name: 'products', href: '/products', id: 'products' },
+  { name: 'aboutUs', href: '#about', id: 'about' },
+  { name: 'services', href: '#services', id: 'services' },
+  { name: 'partners', href: '#partners', id: 'partners' },
+  { name: 'contactUs', href: '#contact', id: 'contact' },
 ]
 
-export default function Navbar() {
+function NavbarContent() {
   const [isOpen, setIsOpen] = useState(false)
+  const { t, i18n } = useTranslation()
+
+  useEffect(() => {
+    if (i18n.language === 'ar') {
+      document.documentElement.dir = 'rtl'
+      document.documentElement.lang = 'ar'
+    } else {
+      document.documentElement.dir = 'ltr'
+      document.documentElement.lang = 'en'
+    }
+  }, [i18n.language])
 
   const scrollToSection = (elementId: string) => {
     const element = document.getElementById(elementId);
@@ -48,6 +62,8 @@ export default function Navbar() {
       window.removeEventListener('hashchange', handleHashChange);
     };
   }, []);
+
+  const menuPosition = i18n.language === 'ar' ? 'left-4' : 'right-4'
 
   return (
     <nav className="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-50">
@@ -81,14 +97,16 @@ export default function Navbar() {
                   }}
                   className="text-gray-700 dark:text-gray-300 hover:bg-blue-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
                 >
-                  {item.name}
+                  {t(`nav.${item.name}`)}
                 </a>
               ))}
               <DarkModeToggle />
+              <LanguageSwitcher />
             </div>
           </div>
-          <div className="md:hidden flex items-center">
+          <div className={`md:hidden flex items-center ${menuPosition}`}>
             <DarkModeToggle />
+            <LanguageSwitcher />
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white ml-2"
@@ -120,13 +138,21 @@ export default function Navbar() {
                   }
                 }}
               >
-                {item.name}
+                {t(`nav.${item.name}`)}
               </a>
             ))}
           </div>
         </div>
       )}
     </nav>
+  )
+}
+
+export default function Navbar() {
+  return (
+    <I18nProvider>
+      <NavbarContent />
+    </I18nProvider>
   )
 }
 

@@ -1,0 +1,53 @@
+{
+  "nav": {
+    "home": "Home",
+    "products": "Products",
+    "aboutUs": "About Us",
+    "services": "Services",
+    "partners": "Partners",
+    "contactUs": "Contact Us"
+  },
+  "products": {
+    "title": "Our Products",
+    "emailInquiry": "Email Inquiry",
+    "whatsappInquiry": "WhatsApp Inquiry",
+    "noCategories": "No categories available.",
+    "noProductsInCategory": "No products available in this category."
+  },
+  "home": {
+    "title": "Make the Best Deal with Us",
+    "subtitle": "Your trusted partner in chemical solutions",
+    "exploreProducts": "Explore Products",
+    "contactUs": "Contact Us"
+  },
+  "about": {
+    "title": "About Us",
+    "mission": {
+      "title": "Our Mission",
+      "description": "At Amoun Chemicals, we strive to provide innovative and sustainable chemical solutions to meet the evolving needs of industries worldwide. Our mission is to contribute to the growth and success of our clients through high-quality products and exceptional service."
+    },
+    "values": {
+      "title": "Our Values",
+      "items": [
+        "Commitment to quality and safety",
+        "Innovation and continuous improvement",
+        "Environmental responsibility",
+        "Customer-centric approach",
+        "Integrity and transparency"
+      ]
+    }
+  },
+  "contact": {
+    "title": "Contact Us",
+    "form": {
+      "name": "Name",
+      "email": "Email",
+      "message": "Message",
+      "send": "Send Message",
+      "sending": "Sending...",
+      "success": "Thank you for your message. We will get back to you soon!",
+      "error": "There was an error sending your message. Please try again."
+    }
+  }
+}
+

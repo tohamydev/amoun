@@ -5,14 +5,14 @@ import Popup from './Popup'
 
 interface Category {
   id: string
-  name: string
+  name: { en: string; ar: string }
   slug: string
 }
 
 interface Product {
   id: string
-  name: string
-  description: string
+  name: { en: string; ar: string }
+  description: { en: string; ar: string }
   image: string
   category: string
 }
@@ -26,20 +26,26 @@ interface ProductFormProps {
 }
 
 export default function ProductForm({ product, categories, onSubmit, onCancel, isOpen }: ProductFormProps) {
-  const [name, setName] = useState(product?.name || '')
-  const [description, setDescription] = useState(product?.description || '')
+  const [nameEn, setNameEn] = useState(product?.name?.en || '')
+  const [nameAr, setNameAr] = useState(product?.name?.ar || '')
+  const [descriptionEn, setDescriptionEn] = useState(product?.description?.en || '')
+  const [descriptionAr, setDescriptionAr] = useState(product?.description?.ar || '')
   const [image, setImage] = useState(product?.image || '')
   const [category, setCategory] = useState(product?.category || categories[0]?.slug || '')
 
   useEffect(() => {
     if (product) {
-      setName(product.name)
-      setDescription(product.description)
+      setNameEn(product.name.en)
+      setNameAr(product.name.ar)
+      setDescriptionEn(product.description.en)
+      setDescriptionAr(product.description.ar)
       setImage(product.image)
       setCategory(product.category)
     } else {
-      setName('')
-      setDescription('')
+      setNameEn('')
+      setNameAr('')
+      setDescriptionEn('')
+      setDescriptionAr('')
       setImage('')
       setCategory(categories[0]?.slug || '')
     }
@@ -47,7 +53,12 @@ export default function ProductForm({ product, categories, onSubmit, onCancel, i
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const updatedProduct = product ? { ...product, name, description, image, category } : { name, description, image, category };
+    const updatedProduct = {
+      name: { en: nameEn, ar: nameAr },
+      description: { en: descriptionEn, ar: descriptionAr },
+      image,
+      category
+    };
     onSubmit(updatedProduct);
   }
 
@@ -55,29 +66,57 @@ export default function ProductForm({ product, categories, onSubmit, onCancel, i
     <Popup isOpen={isOpen} onClose={onCancel} title={product ? 'Edit Product' : 'Add Product'}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Name
+          <label htmlFor="nameEn" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Name (English)
           </label>
           <input
             type="text"
-            id="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            id="nameEn"
+            value={nameEn}
+            onChange={(e) => setNameEn(e.target.value)}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             required
           />
         </div>
         <div>
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Description
+          <label htmlFor="nameAr" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Name (Arabic)
+          </label>
+          <input
+            type="text"
+            id="nameAr"
+            value={nameAr}
+            onChange={(e) => setNameAr(e.target.value)}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            required
+            dir="rtl"
+          />
+        </div>
+        <div>
+          <label htmlFor="descriptionEn" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Description (English)
           </label>
           <textarea
-            id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            id="descriptionEn"
+            value={descriptionEn}
+            onChange={(e) => setDescriptionEn(e.target.value)}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             rows={3}
             required
+          ></textarea>
+        </div>
+        <div>
+          <label htmlFor="descriptionAr" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Description (Arabic)
+          </label>
+          <textarea
+            id="descriptionAr"
+            value={descriptionAr}
+            onChange={(e) => setDescriptionAr(e.target.value)}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            rows={3}
+            required
+            dir="rtl"
           ></textarea>
         </div>
         <div>
@@ -106,7 +145,7 @@ export default function ProductForm({ product, categories, onSubmit, onCancel, i
           >
             {categories.map((cat) => (
               <option key={cat.id} value={cat.slug}>
-                {cat.name}
+                {cat.name.en} / {cat.name.ar}
               </option>
             ))}
           </select>

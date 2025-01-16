@@ -1,6 +1,9 @@
 import Link from 'next/link'
+import { useTranslation } from 'react-i18next'
 
 export default function Home() {
+  const { t } = useTranslation()
+
   return (
     <section id="home" className="relative bg-blue-600 dark:bg-blue-800 text-white">
       <div 
@@ -13,24 +16,24 @@ export default function Home() {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32">
         <div className="text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-6">
-            Make the Best Deal with Us
+            {t('home.title')}
           </h1>
           <p className="text-xl md:text-2xl mb-8">
-            Your trusted partner in chemical solutions
+            {t('home.subtitle')}
           </p>
           <div className="space-x-4">
             <Link
               href="/products"
               className="bg-white text-blue-600 dark:bg-gray-800 dark:text-white px-6 py-3 rounded-md text-lg font-semibold hover:bg-blue-100 dark:hover:bg-gray-700 transition duration-300"
             >
-              Explore Products
+              {t('home.exploreProducts')}
             </Link>
             <Link
               href="#contact"
               className="bg-blue-500 text-white px-6 py-3 rounded-md text-lg font-semibold hover:bg-blue-400 transition duration-300"
               scroll={true}
             >
-              Contact Us
+              {t('home.contactUs')}
             </Link>
           </div>
         </div>

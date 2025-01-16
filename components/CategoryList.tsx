@@ -5,7 +5,10 @@ import { Pencil, Trash2 } from 'lucide-react'
 
 interface Category {
   id: string
-  name: string
+  name: {
+    en: string;
+    ar: string;
+  };
   slug: string
   image: string
 }
@@ -30,7 +33,9 @@ export default function CategoryList({ categories, onEdit, onDelete }: CategoryL
         <tbody>
           {categories.map((category) => (
             <tr key={category.id} className="border-b border-gray-200 dark:border-gray-700">
-              <td className="px-4 py-2 text-gray-800 dark:text-gray-200">{category.name}</td>
+              <td className="px-4 py-2 text-gray-800 dark:text-gray-200">
+                {category.name.en} / {category.name.ar}
+              </td>
               <td className="px-4 py-2 text-gray-800 dark:text-gray-200">{category.slug}</td>
               <td className="px-4 py-2 text-center">
                 <button

@@ -61,7 +61,12 @@
     "firebase": "latest",
     "fs": "latest",
     "path": "latest",
-    "resend": "latest"
+    "react-i18next": "latest",
+    "resend": "latest",
+    "uuid": "latest",
+    "i18next": "latest",
+    "i18next-browser-languagedetector": "latest",
+    "i18next-http-backend": "latest"
   },
   "devDependencies": {
     "@types/node": "^22",

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { MapPin, Phone, Mail } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 export default function ContactUs() {
   const [formData, setFormData] = useState({
@@ -12,6 +13,7 @@ export default function ContactUs() {
   const [contactMethod, setContactMethod] = useState<'email' | 'whatsapp'>('email')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitMessage, setSubmitMessage] = useState('')
+  const { t } = useTranslation()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -24,9 +26,9 @@ export default function ContactUs() {
     setSubmitMessage('')
 
     if (contactMethod === 'whatsapp') {
-      const message = encodeURIComponent(`Name: ${formData.name}\nEmail: ${formData.email}\nMessage: ${formData.message}`)
+      const message = encodeURIComponent(`${t('contact.form.name')}: ${formData.name}\n${t('contact.form.email')}: ${formData.email}\n${t('contact.form.message')}: ${formData.message}`)
       window.open(`https://wa.me/+2010044724510?text=${message}`, '_blank')
-      setSubmitMessage('WhatsApp opened with your message.')
+      setSubmitMessage(t('contact.form.whatsappOpened'))
       setIsSubmitting(false)
       return
     }
@@ -43,15 +45,15 @@ export default function ContactUs() {
       const result = await response.json()
 
       if (response.ok) {
-        setSubmitMessage('Thank you for your message. We will get back to you soon!')
+        setSubmitMessage(t('contact.form.success'))
         setFormData({ name: '', email: '', message: '' })
       } else {
         console.error('Error response:', result)
-        setSubmitMessage(`There was an error sending your message: ${result.error || 'Unknown error'}`)
+        setSubmitMessage(t('contact.form.error', { error: result.error || t('contact.form.unknownError') }))
       }
     } catch (error) {
       console.error('Error sending email:', error)
-      setSubmitMessage('There was an error sending your message. Please try again or contact us directly.')
+      setSubmitMessage(t('contact.form.error'))
     } finally {
       setIsSubmitting(false)
     }
@@ -61,14 +63,14 @@ export default function ContactUs() {
     <section id="contact" className="bg-gray-100 dark:bg-gray-700 py-16 md:py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white mb-4">Contact Us</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white mb-4">{t('contact.title')}</h2>
           <div className="w-24 h-1 bg-blue-600 mx-auto"></div>
         </div>
         <div className="grid md:grid-cols-2 gap-8">
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('contact.form.name')}</label>
                 <input
                   type="text"
                   id="name"
@@ -80,7 +82,7 @@ export default function ContactUs() {
                 />
               </div>
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('contact.form.email')}</label>
                 <input
                   type="email"
                   id="email"
@@ -92,7 +94,7 @@ export default function ContactUs() {
                 />
               </div>
               <div>
-                <label htmlFor="message" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Message</label>
+                <label htmlFor="message" className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('contact.form.message')}</label>
                 <textarea
                   id="message"
                   name="message"
@@ -104,7 +106,7 @@ export default function ContactUs() {
                 ></textarea>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Contact Method</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('contact.form.contactMethod')}</label>
                 <div className="flex space-x-4">
                   <label className="inline-flex items-center">
                     <input
@@ -115,7 +117,7 @@ export default function ContactUs() {
                       checked={contactMethod === 'email'}
                       onChange={() => setContactMethod('email')}
                     />
-                    <span className="ml-2">Email</span>
+                    <span className="ml-2">{t('contact.form.email')}</span>
                   </label>
                   <label className="inline-flex items-center">
                     <input
@@ -126,7 +128,7 @@ export default function ContactUs() {
                       checked={contactMethod === 'whatsapp'}
                       onChange={() => setContactMethod('whatsapp')}
                     />
-                    <span className="ml-2">WhatsApp</span>
+                    <span className="ml-2">{t('contact.form.whatsapp')}</span>
                   </label>
                 </div>
               </div>
@@ -136,7 +138,7 @@ export default function ContactUs() {
                   disabled={isSubmitting}
                   className="w-full bg-blue-600 text-white px-6 py-3 rounded-md text-lg font-semibold hover:bg-blue-500 transition duration-300 dark:bg-blue-700 dark:hover:bg-blue-600 disabled:opacity-50"
                 >
-                  {isSubmitting ? 'Sending...' : `Send Message via ${contactMethod === 'email' ? 'Email' : 'WhatsApp'}`}
+                  {isSubmitting ? t('contact.form.sending') : t('contact.form.send')}
                 </button>
               </div>
               {submitMessage && (
@@ -149,15 +151,15 @@ export default function ContactUs() {
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 space-y-6">
             <div className="flex items-center">
               <MapPin className="w-6 h-6 text-blue-600 dark:text-blue-400 mr-4 flex-shrink-0" />
-              <p className="text-gray-700 dark:text-gray-300">123 Chemical Street, Cairo, Egypt</p>
+              <p className="text-gray-700 dark:text-gray-300">{t('contact.address')}</p>
             </div>
             <div className="flex items-center">
               <Phone className="w-6 h-6 text-blue-600 dark:text-blue-400 mr-4 flex-shrink-0" />
-              <p className="text-gray-700 dark:text-gray-300">+201004724510</p>
+              <p className="text-gray-700 dark:text-gray-300">{t('contact.phone')}</p>
             </div>
             <div className="flex items-center">
               <Mail className="w-6 h-6 text-blue-600 dark:text-blue-400 mr-4 flex-shrink-0" />
-              <p className="text-gray-700 dark:text-gray-300">info@amounchemicals.com</p>
+              <p className="text-gray-700 dark:text-gray-300">{t('contact.email')}</p>
             </div>
             <div className="aspect-w-16 aspect-h-9 mt-6">
               <iframe

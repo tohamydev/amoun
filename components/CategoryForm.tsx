@@ -5,7 +5,10 @@ import Popup from './Popup'
 
 interface Category {
   id: string
-  name: string
+  name: {
+    en: string;
+    ar: string;
+  };
   slug: string
   image: string
 }
@@ -18,17 +21,20 @@ interface CategoryFormProps {
 }
 
 export default function CategoryForm({ category, onSubmit, onCancel, isOpen }: CategoryFormProps) {
-  const [name, setName] = useState(category?.name || '')
+  const [nameEn, setNameEn] = useState(category?.name?.en || '')
+  const [nameAr, setNameAr] = useState(category?.name?.ar || '')
   const [slug, setSlug] = useState(category?.slug || '')
   const [image, setImage] = useState(category?.image || '')
 
   useEffect(() => {
     if (category) {
-      setName(category.name)
+      setNameEn(category.name.en)
+      setNameAr(category.name.ar)
       setSlug(category.slug)
       setImage(category.image)
     } else {
-      setName('')
+      setNameEn('')
+      setNameAr('')
       setSlug('')
       setImage('')
     }
@@ -36,7 +42,9 @@ export default function CategoryForm({ category, onSubmit, onCancel, isOpen }: C
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const updatedCategory = category ? { ...category, name, slug, image } : { name, slug, image };
+    const updatedCategory = category 
+      ? { ...category, name: { en: nameEn, ar: nameAr }, slug, image }
+      : { name: { en: nameEn, ar: nameAr }, slug, image };
     onSubmit(updatedCategory);
   };
 
@@ -44,16 +52,30 @@ export default function CategoryForm({ category, onSubmit, onCancel, isOpen }: C
     <Popup isOpen={isOpen} onClose={onCancel} title={category ? 'Edit Category' : 'Add Category'}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Name
+          <label htmlFor="nameEn" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Name (English)
           </label>
           <input
             type="text"
-            id="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            id="nameEn"
+            value={nameEn}
+            onChange={(e) => setNameEn(e.target.value)}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             required
+          />
+        </div>
+        <div>
+          <label htmlFor="nameAr" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Name (Arabic)
+          </label>
+          <input
+            type="text"
+            id="nameAr"
+            value={nameAr}
+            onChange={(e) => setNameAr(e.target.value)}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            required
+            dir="rtl"
           />
         </div>
         <div>
