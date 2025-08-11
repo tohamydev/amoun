@@ -25,4 +25,3 @@ export default function Popup({ isOpen, onClose, title, children }: PopupProps) 
     </div>
   )
 }
-

@@ -1,8 +1,8 @@
-'use client'
+"use client"
 
-import { useState } from 'react'
-import { Trash2, EyeOff, Eye, Pencil } from 'lucide-react'
-import { useTranslation } from 'react-i18next'
+import { useState } from "react"
+import { Trash2, EyeOff, Eye, Pencil } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
 interface Product {
   id: string
@@ -25,20 +25,30 @@ export default function ProductTable({ products, onDelete, onToggleVisibility, o
   const { i18n } = useTranslation()
 
   const handleDelete = (id: string) => {
-    if (window.confirm('Are you sure you want to delete this product?')) {
+    if (window.confirm("Are you sure you want to delete this product?")) {
       onDelete(id)
-      setVisibleProducts(visibleProducts.filter(product => product.id !== id))
+      setVisibleProducts(visibleProducts.filter((product) => product.id !== id))
     }
   }
 
   const handleToggleVisibility = (id: string) => {
     onToggleVisibility(id)
-    setVisibleProducts(visibleProducts.map(product =>
-      product.id === id ? { ...product, hidden: !product.hidden } : product
-    ))
+    setVisibleProducts(
+      visibleProducts.map((product) => (product.id === id ? { ...product, hidden: !product.hidden } : product)),
+    )
   }
 
-  const getCurrentLanguage = () => i18n.language || 'en'
+  const getCurrentLanguage = () => i18n.language || "en"
+
+  const getProductText = (product: Product, field: "name" | "description") => {
+    const currentLang = getCurrentLanguage()
+    const fieldData = product[field]
+
+    if (!fieldData) return "N/A"
+
+    // Try current language first, then fallback to English, then Arabic, then empty string
+    return fieldData[currentLang as keyof typeof fieldData] || fieldData.en || fieldData.ar || "N/A"
+  }
 
   return (
     <div className="overflow-x-auto">
@@ -54,25 +64,23 @@ export default function ProductTable({ products, onDelete, onToggleVisibility, o
         <tbody>
           {visibleProducts.map((product) => (
             <tr key={product.id} className="border-b border-gray-200 dark:border-gray-700">
-              <td className="px-4 py-2 text-gray-800 dark:text-gray-200">
-                {product.name[getCurrentLanguage()]}
-              </td>
-              <td className="px-4 py-2 text-gray-800 dark:text-gray-200">{product.category}</td>
+              <td className="px-4 py-2 text-gray-800 dark:text-gray-200">{getProductText(product, "name")}</td>
+              <td className="px-4 py-2 text-gray-800 dark:text-gray-200">{product.category || "N/A"}</td>
               <td className="px-4 py-2 text-gray-800 dark:text-gray-200">
                 <div className="relative group">
-                  <p>{product.description[getCurrentLanguage()].substring(0, 50)}...</p>
+                  <p>{getProductText(product, "description").substring(0, 50)}...</p>
                   <div className="absolute z-10 invisible group-hover:visible bg-white dark:bg-gray-800 p-2 rounded shadow-lg">
-                    <p className="mb-2"><strong>English:</strong> {product.description.en}</p>
-                    <p dir="rtl"><strong>Arabic:</strong> {product.description.ar}</p>
+                    <p className="mb-2">
+                      <strong>English:</strong> {product.description?.en || "N/A"}
+                    </p>
+                    <p dir="rtl">
+                      <strong>Arabic:</strong> {product.description?.ar || "N/A"}
+                    </p>
                   </div>
                 </div>
               </td>
               <td className="px-4 py-2 text-center">
-                <button
-                  onClick={() => onEdit(product)}
-                  className="text-blue-600 hover:text-blue-800 mr-2"
-                  title="Edit"
-                >
+                <button onClick={() => onEdit(product)} className="text-blue-600 hover:text-blue-800 mr-2" title="Edit">
                   <Pencil size={20} />
                 </button>
                 <button
@@ -84,8 +92,8 @@ export default function ProductTable({ products, onDelete, onToggleVisibility, o
                 </button>
                 <button
                   onClick={() => handleToggleVisibility(product.id)}
-                  className={`${product.hidden ? 'text-gray-600 hover:text-gray-800' : 'text-blue-600 hover:text-blue-800'}`}
-                  title={product.hidden ? 'Show' : 'Hide'}
+                  className={`${product.hidden ? "text-gray-600 hover:text-gray-800" : "text-blue-600 hover:text-blue-800"}`}
+                  title={product.hidden ? "Show" : "Hide"}
                 >
                   {product.hidden ? <Eye size={20} /> : <EyeOff size={20} />}
                 </button>
@@ -97,4 +105,3 @@ export default function ProductTable({ products, onDelete, onToggleVisibility, o
     </div>
   )
 }
-

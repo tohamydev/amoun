@@ -117,4 +117,3 @@ export default function ProductEditor({ categories, products, onSave, isSaving }
     </div>
   )
 }
-

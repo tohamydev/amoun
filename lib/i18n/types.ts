@@ -18,4 +18,3 @@ export interface Category {
   image: string;
   slug: string;
 }
-

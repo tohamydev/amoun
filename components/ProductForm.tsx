@@ -169,4 +169,3 @@ export default function ProductForm({ product, categories, onSubmit, onCancel, i
     </Popup>
   )
 }
-

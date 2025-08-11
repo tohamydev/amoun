@@ -36,4 +36,3 @@ export const categoryNames = {
   'pharmaceutical-chemicals': 'Pharmaceutical Chemicals',
   'laboratory-chemicals': 'Laboratory Chemicals',
 }
-

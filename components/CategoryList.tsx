@@ -60,4 +60,3 @@ export default function CategoryList({ categories, onEdit, onDelete }: CategoryL
     </div>
   )
 }
-

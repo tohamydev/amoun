@@ -99,4 +99,3 @@ export default function CategoryEditor({ categories, products, onSave, isSaving 
     </div>
   )
 }
-

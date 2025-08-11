@@ -7,6 +7,27 @@
     "partners": "Partners",
     "contactUs": "Contact Us"
   },
+  "home": {
+    "title": "Make the Best Deal with Us",
+    "subtitle": "Your trusted partner in chemical solutions",
+    "exploreProducts": "Explore Products",
+    "contactUs": "Contact Us"
+  },
+  "services": {
+    "title": "Our Services",
+    "manufacturing": {
+      "title": "Chemical Manufacturing",
+      "description": "State-of-the-art facilities producing high-quality chemicals for various industries."
+    },
+    "supplyChain": {
+      "title": "Supply Chain Solutions",
+      "description": "Efficient and reliable distribution network ensuring timely delivery of products."
+    },
+    "customFormulations": {
+      "title": "Custom Formulations",
+      "description": "Tailored chemical solutions to meet your specific requirements and challenges."
+    }
+  },
   "products": {
     "title": "Our Products",
     "description": "Explore our wide range of high-quality chemical products",
@@ -15,12 +36,6 @@
     "whatsappInquiry": "WhatsApp Inquiry",
     "noCategories": "No categories available.",
     "noProductsInCategory": "No products available in this category."
-  },
-  "home": {
-    "title": "Make the Best Deal with Us",
-    "subtitle": "Your trusted partner in chemical solutions",
-    "exploreProducts": "Explore Products",
-    "contactUs": "Contact Us"
   },
   "about": {
     "title": "About Us",
@@ -39,6 +54,10 @@
       ]
     }
   },
+  "partners": {
+    "title": "Our Partners",
+    "description": "We collaborate with industry leaders to deliver exceptional chemical solutions and drive innovation in various sectors."
+  },
   "contact": {
     "title": "Contact Us",
     "form": {
@@ -48,8 +67,15 @@
       "send": "Send Message",
       "sending": "Sending...",
       "success": "Thank you for your message. We will get back to you soon!",
-      "error": "There was an error sending your message. Please try again."
+      "error": "There was an error sending your message. Please try again.",
+      "contactMethod": "Contact Method",
+      "emailOption": "Email",
+      "whatsappOption": "WhatsApp"
+    },
+    "info": {
+      "address": "123 Chemical Street, Cairo, Egypt",
+      "phone": "+201004724510",
+      "email": "info@amounchemicals.com"
     }
   }
 }
-
