@@ -1,6 +1,8 @@
 "use client"
 import Image from "next/image"
 import { useTranslation } from "react-i18next"
+import { useState, useEffect } from "react"
+import { getContactInfo, type ContactInfo } from "@/lib/firebase-collections"
 
 interface Product {
   id: string
@@ -18,6 +20,20 @@ interface CategoryClientProps {
 
 export default function CategoryClient({ products, categoryName, slug }: CategoryClientProps) {
   const { t, i18n } = useTranslation()
+  const [contactInfo, setContactInfo] = useState<ContactInfo | null>(null)
+
+  useEffect(() => {
+    const loadContactInfo = async () => {
+      try {
+        const data = await getContactInfo()
+        setContactInfo(data)
+      } catch (error) {
+        console.error("Error loading contact info:", error)
+      }
+    }
+
+    loadContactInfo()
+  }, [])
 
   const getCurrentLanguage = () => i18n.language || "en"
 
@@ -26,14 +42,17 @@ export default function CategoryClient({ products, categoryName, slug }: Categor
     const body = encodeURIComponent(`I would like more details about the following product:
 - Product Name: ${product.name[getCurrentLanguage()]}
 - Category: ${categoryName[getCurrentLanguage()]}`)
-    return `mailto:info@amounchemicals.com?subject=${subject}&body=${body}`
+    const email = contactInfo?.email || "info@amounchemicals.com"
+    return `mailto:${email}?subject=${subject}&body=${body}`
   }
 
   const createWhatsAppLink = (product: Product) => {
     const message = encodeURIComponent(`I would like more details about the following product:
 - Product Name: ${product.name[getCurrentLanguage()]}
 - Category: ${categoryName[getCurrentLanguage()]}`)
-    return `https://wa.me/201004724510?text=${message}`
+    const whatsappNumber = contactInfo?.whatsapp || "+201004724510"
+    const cleanNumber = whatsappNumber.replace(/\D/g, "")
+    return `https://wa.me/${cleanNumber}?text=${message}`
   }
 
   return (
