@@ -10,8 +10,8 @@ interface AdminLoginProps {
 
 // Default credentials (should be changed in production)
 const DEFAULT_ADMIN_CREDENTIALS = {
-  username: "admin",
-  password: "amoun2024",
+  username: "amoun_admin",
+  password: "AmounChemicals@2024!",
 }
 
 export default function AdminLogin({ onLogin }: AdminLoginProps) {
@@ -136,12 +136,23 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
 
           <div className="text-center">
             <div className="text-sm text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 p-3 rounded-md">
-              <p className="font-medium mb-1">Default Credentials:</p>
+              <p className="font-medium mb-1">Login Credentials:</p>
               <p>
-                Username: <code className="bg-gray-200 dark:bg-gray-700 px-1 rounded">admin</code>
+                Username:{" "}
+                <code className="bg-gray-200 dark:bg-gray-700 px-1 rounded">
+                  {process.env.NEXT_PUBLIC_ADMIN_USERNAME || DEFAULT_ADMIN_CREDENTIALS.username}
+                </code>
               </p>
               <p>
-                Password: <code className="bg-gray-200 dark:bg-gray-700 px-1 rounded">amoun2024</code>
+                Password:{" "}
+                <code className="bg-gray-200 dark:bg-gray-700 px-1 rounded">
+                  {process.env.NEXT_PUBLIC_ADMIN_PASSWORD || DEFAULT_ADMIN_CREDENTIALS.password}
+                </code>
+              </p>
+              <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                {process.env.NEXT_PUBLIC_ADMIN_USERNAME
+                  ? "Using environment variables"
+                  : "Using default credentials. Set NEXT_PUBLIC_ADMIN_USERNAME and NEXT_PUBLIC_ADMIN_PASSWORD environment variables to override."}
               </p>
             </div>
           </div>

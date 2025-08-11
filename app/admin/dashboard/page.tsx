@@ -11,6 +11,7 @@ import PartnersEditor from "@/components/dashboard/PartnersEditor"
 import LogoEditor from "@/components/LogoEditor"
 import SocialMediaEditor from "@/components/SocialMediaEditor"
 import ContactInfoEditor from "@/components/ContactInfoEditor"
+import AdminLogin from "@/components/AdminLogin"
 import {
   Home,
   Info,
@@ -23,9 +24,11 @@ import {
   Phone,
   Palette,
   BarChart3,
+  LogOut,
 } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import Link from "next/link"
 
 interface HomeContent {
   hero: {
@@ -159,6 +162,8 @@ const defaultContent: HomeContent = {
 }
 
 export default function DashboardPage() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [authLoading, setAuthLoading] = useState(true)
   const [content, setContent] = useState<HomeContent>(defaultContent)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -168,8 +173,45 @@ export default function DashboardPage() {
   const [permissionError, setPermissionError] = useState(false)
 
   useEffect(() => {
-    fetchContent()
+    checkAuthStatus()
   }, [])
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchContent()
+    }
+  }, [isAuthenticated])
+
+  const checkAuthStatus = () => {
+    const isAuth = localStorage.getItem("adminAuthenticated")
+    const loginTime = localStorage.getItem("adminLoginTime")
+
+    if (isAuth === "true" && loginTime) {
+      const timeDiff = Date.now() - Number.parseInt(loginTime)
+      const hoursDiff = timeDiff / (1000 * 60 * 60)
+
+      if (hoursDiff < 24) {
+        setIsAuthenticated(true)
+      } else {
+        localStorage.removeItem("adminAuthenticated")
+        localStorage.removeItem("adminLoginTime")
+        setIsAuthenticated(false)
+      }
+    } else {
+      setIsAuthenticated(false)
+    }
+    setAuthLoading(false)
+  }
+
+  const handleLogin = (success: boolean) => {
+    setIsAuthenticated(success)
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem("adminAuthenticated")
+    localStorage.removeItem("adminLoginTime")
+    setIsAuthenticated(false)
+  }
 
   const fetchContent = async () => {
     try {
@@ -184,7 +226,6 @@ export default function DashboardPage() {
         const data = docSnap.data() as HomeContent
         setContent({ ...defaultContent, ...data })
       } else {
-        // Initialize with default content
         console.log("No document found, initializing with default content...")
         await initializeDefaultContent()
       }
@@ -264,6 +305,25 @@ export default function DashboardPage() {
     { id: "contact", name: "Contact Info", icon: Phone, description: "Contact details and WhatsApp" },
   ]
 
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <div className="container mx-auto p-6">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <LoadingSpinner />
+              <p className="mt-4 text-gray-600 dark:text-gray-400">Checking authentication...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (!isAuthenticated) {
+    return <AdminLogin onLogin={handleLogin} />
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -288,7 +348,21 @@ export default function DashboardPage() {
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Admin Dashboard</h1>
               <p className="text-gray-600 dark:text-gray-300">Manage your website content, settings, and information</p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-4">
+              <Link
+                href="/admin"
+                className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded inline-flex items-center"
+              >
+                <Home className="w-4 h-4 mr-2" />
+                Back to Admin
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded inline-flex items-center"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Logout
+              </button>
               <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
                 <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
                 Online
