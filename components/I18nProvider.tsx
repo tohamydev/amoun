@@ -1,31 +1,27 @@
 "use client"
 
 import type React from "react"
-
 import { useEffect, useState } from "react"
 import { I18nextProvider } from "react-i18next"
-import i18n from "@/lib/i18n/config"
 
 interface I18nProviderProps {
   children: React.ReactNode
 }
 
 export default function I18nProvider({ children }: I18nProviderProps) {
-  const [isInitialized, setIsInitialized] = useState(false)
+  const [i18nInstance, setI18nInstance] = useState<any>(null)
 
   useEffect(() => {
-    if (i18n.isInitialized) {
-      setIsInitialized(true)
-    } else {
-      i18n.on("initialized", () => {
-        setIsInitialized(true)
-      })
-    }
+    // Dynamically import i18n only on client side
+    import("@/lib/i18n/config").then((module) => {
+      setI18nInstance(module.default)
+    })
   }, [])
 
-  if (!isInitialized) {
-    return <div>Loading...</div>
+  // Show loading only briefly, then render children even if i18n isn't ready
+  if (!i18nInstance) {
+    return <div style={{ opacity: 0 }}>{children}</div>
   }
 
-  return <I18nextProvider i18n={i18n}>{children}</I18nextProvider>
+  return <I18nextProvider i18n={i18nInstance}>{children}</I18nextProvider>
 }
