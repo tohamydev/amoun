@@ -17,6 +17,8 @@ export default function ContactInfoEditor() {
     email: "",
     address: { en: "", ar: "" },
     workingHours: { en: "", ar: "" },
+    latitude: 30.044437981885595,
+    longitude: 31.233367215114705,
     lastUpdated: "",
   })
   const [loading, setLoading] = useState(true)
@@ -59,7 +61,7 @@ export default function ContactInfoEditor() {
     }
   }
 
-  const updateContactInfo = (field: string, value: string | { en: string; ar: string }) => {
+  const updateContactInfo = (field: string, value: string | { en: string; ar: string } | number) => {
     setContactInfo((prev) => ({
       ...prev,
       [field]: value,
@@ -76,6 +78,14 @@ export default function ContactInfoEditor() {
     if (!phone) return true
     const phoneRegex = /^\+?[\d\s\-$$$$]+$/
     return phoneRegex.test(phone)
+  }
+
+  const validateLatitude = (lat: number): boolean => {
+    return lat >= -90 && lat <= 90
+  }
+
+  const validateLongitude = (lng: number): boolean => {
+    return lng >= -180 && lng <= 180
   }
 
   const formatWhatsAppUrl = (number: string): string => {
@@ -303,6 +313,91 @@ export default function ContactInfoEditor() {
                 dir="rtl"
               />
               <p className="text-sm text-gray-500">ساعات العمل باللغة العربية</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Map Coordinates */}
+        <div className="space-y-4">
+          <Label className="flex items-center gap-2">
+            <MapPin className="h-4 w-4 text-blue-600" />
+            Map Coordinates
+            <Info className="h-4 w-4 text-gray-400" title="Location coordinates for Google Maps" />
+          </Label>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="latitude">Latitude</Label>
+              <Input
+                id="latitude"
+                type="number"
+                step="any"
+                value={contactInfo.latitude}
+                onChange={(e) => updateContactInfo("latitude", Number.parseFloat(e.target.value) || 0)}
+                placeholder="30.044437981885595"
+                className={!validateLatitude(contactInfo.latitude) ? "border-red-300 focus:border-red-500" : ""}
+              />
+              <div className="space-y-1">
+                <p className="text-sm text-gray-500">
+                  <span className="font-medium">EN:</span> Latitude coordinate for map location (-90 to 90)
+                </p>
+                <p className="text-sm text-gray-500">
+                  <span className="font-medium">AR:</span> إحداثي خط العرض لموقع الخريطة (-90 إلى 90)
+                </p>
+                {!validateLatitude(contactInfo.latitude) && (
+                  <p className="text-sm text-red-600">Latitude must be between -90 and 90</p>
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="longitude">Longitude</Label>
+              <Input
+                id="longitude"
+                type="number"
+                step="any"
+                value={contactInfo.longitude}
+                onChange={(e) => updateContactInfo("longitude", Number.parseFloat(e.target.value) || 0)}
+                placeholder="31.233367215114705"
+                className={!validateLongitude(contactInfo.longitude) ? "border-red-300 focus:border-red-500" : ""}
+              />
+              <div className="space-y-1">
+                <p className="text-sm text-gray-500">
+                  <span className="font-medium">EN:</span> Longitude coordinate for map location (-180 to 180)
+                </p>
+                <p className="text-sm text-gray-500">
+                  <span className="font-medium">AR:</span> إحداثي خط الطول لموقع الخريطة (-180 إلى 180)
+                </p>
+                {!validateLongitude(contactInfo.longitude) && (
+                  <p className="text-sm text-red-600">Longitude must be between -180 and 180</p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="flex items-start gap-2">
+              <Info className="h-5 w-5 text-blue-600 mt-0.5" />
+              <div className="space-y-2">
+                <h4 className="font-medium text-blue-900">How to Find Coordinates</h4>
+                <ul className="text-sm text-blue-800 space-y-1">
+                  <li>• Go to Google Maps and search for your business location</li>
+                  <li>• Right-click on the exact location pin</li>
+                  <li>• Click on the coordinates that appear (e.g., "30.044, 31.233")</li>
+                  <li>• Copy the latitude (first number) and longitude (second number)</li>
+                </ul>
+                <div className="mt-3 text-sm">
+                  <p className="text-blue-800">
+                    <span className="font-medium">AR:</span> كيفية العثور على الإحداثيات
+                  </p>
+                  <ul className="text-blue-700 space-y-1 mt-1">
+                    <li>• اذهب إلى خرائط جوجل وابحث عن موقع شركتك</li>
+                    <li>• انقر بزر الماوس الأيمن على دبوس الموقع المحدد</li>
+                    <li>• انقر على الإحداثيات التي تظهر (مثل "30.044, 31.233")</li>
+                    <li>• انسخ خط العرض (الرقم الأول) وخط الطول (الرقم الثاني)</li>
+                  </ul>
+                </div>
+              </div>
             </div>
           </div>
         </div>

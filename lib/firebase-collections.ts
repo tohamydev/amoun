@@ -14,6 +14,8 @@ export interface ContactInfo {
   email: string
   address: { en: string; ar: string }
   workingHours: { en: string; ar: string }
+  latitude: number
+  longitude: number
   lastUpdated: string
 }
 

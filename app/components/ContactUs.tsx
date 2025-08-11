@@ -243,7 +243,7 @@ export default function ContactUs() {
             )}
             <div className="w-full h-0 pb-[56.25%] relative mt-6">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3453.6661216416897!2d31.233367215114705!3d30.044437981885595!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzDCsDAyJzQwLjAiTiAzMcKwMTQnMDAuOSJF!5e0!3m2!1sen!2sus!4v1623345678901!5m2!1sen!2sus"
+                src={`https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3453.6661216416897!2d${contactInfo?.longitude || 31.233367215114705}!3d${contactInfo?.latitude || 30.044437981885595}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2z${encodeURIComponent(`${contactInfo?.latitude || 30.044437981885595},${contactInfo?.longitude || 31.233367215114705}`)}!5e0!3m2!1sen!2sus!4v1623345678901!5m2!1sen!2sus`}
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
