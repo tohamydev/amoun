@@ -160,22 +160,37 @@ export default function AdminPage() {
 
   const handleAddProduct = async (product: Omit<Product, "id">) => {
     try {
+      setLoading(true)
+      setError(null)
+
       const docRef = await addDoc(collection(db, "products"), product)
       const newProduct = { id: docRef.id, ...product }
-      setProducts([...products, newProduct])
+
+      setProducts((prevProducts) => [...prevProducts, newProduct])
       setIsProductFormOpen(false)
+      setEditingProduct(null)
+
+      await fetchData()
     } catch (error) {
       console.error("Error adding product:", error)
       setError("Failed to add product. Please try again.")
+    } finally {
+      setLoading(false)
     }
   }
 
   const handleUpdateProduct = async (updatedProduct: Product) => {
     try {
+      if (!updatedProduct.id) {
+        setError("Product ID is missing. Cannot update product.")
+        return
+      }
+
       const { id, ...productData } = updatedProduct
       await updateDoc(doc(db, "products", id), productData)
       setProducts(products.map((prod) => (prod.id === id ? updatedProduct : prod)))
       setIsProductFormOpen(false)
+      setEditingProduct(null)
     } catch (error) {
       console.error("Error updating product:", error)
       setError("Failed to update product. Please try again.")
