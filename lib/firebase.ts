@@ -13,30 +13,32 @@ const firebaseConfig = {
   measurementId: "G-62PL0M946W",
 }
 
-// Initialize Firebase
 let app: any
 let db: any
 let auth: any
 let analytics: any
 
-if (typeof window !== "undefined") {
-  // Client-side initialization
-  try {
-    app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig)
-    db = getFirestore(app)
-    auth = getAuth(app)
+try {
+  // Initialize Firebase app
+  app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig)
+  db = getFirestore(app)
+  auth = getAuth(app)
 
-    // Initialize Analytics only on client-side
+  // Initialize Analytics only on client-side
+  if (typeof window !== "undefined") {
     analytics = getAnalytics(app)
-  } catch (error) {
-    console.error("Firebase initialization error:", error)
   }
-} else {
-  // Server-side - create minimal exports to prevent errors
-  app = null
-  db = null
-  auth = null
-  analytics = null
+} catch (error) {
+  console.error("Firebase initialization error:", error)
+  if (!app) {
+    try {
+      app = initializeApp(firebaseConfig)
+      db = getFirestore(app)
+      auth = getAuth(app)
+    } catch (fallbackError) {
+      console.error("Firebase fallback initialization failed:", fallbackError)
+    }
+  }
 }
 
 export { db, analytics, auth }

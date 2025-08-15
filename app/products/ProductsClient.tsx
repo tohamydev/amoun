@@ -24,7 +24,15 @@ export default function ProductsClient() {
     async function fetchCategories() {
       try {
         const categoriesSnapshot = await getDocs(collection(db, "categories"))
-        const fetchedCategories = categoriesSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }) as Category)
+        const fetchedCategories = categoriesSnapshot.docs.map(
+          (doc) =>
+            ({
+              id: doc.id,
+              ...doc.data(),
+            }) as Category,
+        )
+
+        console.log("[v0] Fetched categories:", fetchedCategories)
         setCategories(fetchedCategories)
       } catch (error) {
         console.error("Error fetching categories:", error)
@@ -66,7 +74,7 @@ export default function ProductsClient() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {categories.map((category, index) => (
                 <Link
                   key={category.id}

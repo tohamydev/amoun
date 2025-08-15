@@ -28,6 +28,14 @@ export default function CategoryClient({ products, categoryName, slug }: Categor
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    console.log("[v0] CategoryClient received props:")
+    console.log("[v0] - slug:", slug)
+    console.log("[v0] - categoryName:", categoryName)
+    console.log("[v0] - products count:", products.length)
+    console.log("[v0] - products data:", products)
+  }, [products, categoryName, slug])
+
+  useEffect(() => {
     const loadContactInfo = async () => {
       try {
         const data = await getContactInfo()
