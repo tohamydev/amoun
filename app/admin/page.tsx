@@ -187,7 +187,11 @@ export default function AdminPage() {
       }
 
       const { id, ...productData } = updatedProduct
-      await updateDoc(doc(db, "products", id), productData)
+      const cleanProductData = Object.fromEntries(
+        Object.entries(productData).filter(([_, value]) => value !== undefined),
+      )
+
+      await updateDoc(doc(db, "products", id), cleanProductData)
       setProducts(products.map((prod) => (prod.id === id ? updatedProduct : prod)))
       setIsProductFormOpen(false)
       setEditingProduct(null)
