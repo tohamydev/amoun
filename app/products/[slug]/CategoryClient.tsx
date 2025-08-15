@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next"
 import { useState, useEffect } from "react"
 import { getContactInfo, type ContactInfo } from "@/lib/firebase-collections"
 import CategorySkeleton from "@/components/CategorySkeleton"
+import { FileText, Download } from "lucide-react"
 
 interface Product {
   id: string
@@ -11,6 +12,8 @@ interface Product {
   description: { en: string; ar: string }
   image: string
   category: string
+  pdfUrl?: string
+  pdfType?: "upload" | "link"
 }
 
 interface CategoryClientProps {
@@ -61,6 +64,28 @@ export default function CategoryClient({ products, categoryName, slug }: Categor
     const whatsappNumber = contactInfo?.whatsapp || "+201004724510"
     const cleanNumber = whatsappNumber.replace(/\D/g, "")
     return `https://wa.me/${cleanNumber}?text=${message}`
+  }
+
+  const handlePdfClick = (product: Product) => {
+    if (product.pdfUrl) {
+      if (product.pdfType === "upload") {
+        // For uploaded files, open in new tab for viewing/downloading
+        window.open(product.pdfUrl, "_blank")
+      } else {
+        // For external links, open directly
+        window.open(product.pdfUrl, "_blank")
+      }
+    } else {
+      // No PDF available, redirect to WhatsApp
+      const message = encodeURIComponent(`I need the product details PDF for:
+- Product Name: ${product.name[getCurrentLanguage()]}
+- Category: ${categoryName[getCurrentLanguage()]}
+
+Please provide the product specification document.`)
+      const whatsappNumber = contactInfo?.whatsapp || "+201004724510"
+      const cleanNumber = whatsappNumber.replace(/\D/g, "")
+      window.open(`https://wa.me/${cleanNumber}?text=${message}`, "_blank")
+    }
   }
 
   return (
@@ -143,6 +168,29 @@ export default function CategoryClient({ products, categoryName, slug }: Categor
                         ))}
                       </div>
                       <span className="text-sm text-gray-500 ml-2">(4.5)</span>
+                    </div>
+
+                    <div className="mb-3">
+                      <button
+                        onClick={() => handlePdfClick(product)}
+                        className={`w-full flex items-center justify-center px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-300 ${
+                          product.pdfUrl
+                            ? "bg-red-600 text-white hover:bg-red-700"
+                            : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
+                        }`}
+                      >
+                        {product.pdfUrl ? (
+                          <>
+                            <Download className="w-4 h-4 mr-2" />
+                            Product Details PDF
+                          </>
+                        ) : (
+                          <>
+                            <FileText className="w-4 h-4 mr-2" />
+                            Not Available - Contact Amoun
+                          </>
+                        )}
+                      </button>
                     </div>
 
                     <div className="flex space-x-2 mt-auto">
