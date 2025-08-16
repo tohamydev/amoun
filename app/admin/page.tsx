@@ -7,6 +7,7 @@ import CategoryForm from "@/components/CategoryForm"
 import ProductTable from "@/components/ProductTable"
 import ProductForm from "@/components/ProductForm"
 import InsertDummyData from "@/components/InsertDummyData"
+import ExcelImportExport from "@/components/ExcelImportExport"
 import { db } from "@/lib/firebase"
 import { collection, doc, deleteDoc, updateDoc, addDoc, getDocs } from "firebase/firestore"
 import LoadingSpinner from "@/components/LoadingSpinner"
@@ -42,7 +43,6 @@ export default function AdminPage() {
   const [isProductFormOpen, setIsProductFormOpen] = useState(false)
 
   useEffect(() => {
-    // Check if user is already authenticated
     const checkAuthStatus = () => {
       const isAuth = localStorage.getItem("adminAuthenticated")
       const loginTime = localStorage.getItem("adminLoginTime")
@@ -51,7 +51,6 @@ export default function AdminPage() {
         const timeDiff = Date.now() - Number.parseInt(loginTime)
         const hoursDiff = timeDiff / (1000 * 60 * 60)
 
-        // Session expires after 24 hours
         if (hoursDiff < 24) {
           setIsAuthenticated(true)
         } else {
@@ -114,7 +113,6 @@ export default function AdminPage() {
       setCategories(categories.map((cat) => (cat.id === id ? updatedCategory : cat)))
       setIsCategoryFormOpen(false)
 
-      // Update associated products
       const updatedProducts = products.map((product) => {
         if (product.category === editingCategory?.slug) {
           return { ...product, category: updatedCategory.slug }
@@ -123,7 +121,6 @@ export default function AdminPage() {
       })
       setProducts(updatedProducts)
 
-      // Update products in Firestore
       for (const product of updatedProducts) {
         if (product.category === updatedCategory.slug) {
           await updateDoc(doc(db, "products", product.id), { category: updatedCategory.slug })
@@ -143,7 +140,6 @@ export default function AdminPage() {
         await deleteDoc(doc(db, "categories", id))
         setCategories(categories.filter((cat) => cat.id !== id))
 
-        // Delete associated products
         const associatedProducts = products.filter(
           (product) => product.category === categories.find((cat) => cat.id === id)?.slug,
         )
@@ -225,6 +221,10 @@ export default function AdminPage() {
       console.error("Error toggling product visibility:", error)
       setError("Failed to update product visibility. Please try again.")
     }
+  }
+
+  const handleExcelImportComplete = async () => {
+    await fetchData()
   }
 
   if (loading && isAuthenticated) {
@@ -325,6 +325,9 @@ export default function AdminPage() {
       {activeTab === "products" && (
         <div>
           <h2 className="text-xl font-semibold mb-4">Products</h2>
+          <div className="mb-6">
+            <ExcelImportExport onImportComplete={handleExcelImportComplete} />
+          </div>
           <button
             onClick={() => {
               setEditingProduct(null)
